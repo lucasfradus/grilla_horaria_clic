@@ -1,0 +1,89 @@
+/* HOT CLIC — paleta manual de marca: #420B09 #57140F #EDECE7 #491318 · Poppins + Inter · display: Bebas Neue (sustituto web de Helios Bold) */
+
+:root {
+  --brand-ink: #420b09;
+  --brand-wine: #57140f;
+  --brand-cream: #edece7;
+  --brand-burgundy: #491318;
+
+  --text: var(--brand-ink);
+  --muted: #6b534e;
+  --border: rgba(66, 11, 9, 0.14);
+  --bg: var(--brand-cream);
+  --card: #ffffff;
+  --header-bg: rgba(237, 236, 231, 0.95);
+  --gutter-bg: #f2f1ed;
+  --cell-bg: #ffffff;
+  --slot-line: rgba(73, 19, 24, 0.12);
+  --input-bg: #fff;
+  --btn: var(--brand-wine);
+  --accent: var(--brand-burgundy);
+  --danger: #b91c1c;
+  --block-a: var(--brand-wine);
+  --block-b: var(--brand-ink);
+  --err-bg: #fef2f2;
+  --err-text: #991b1b;
+  --err-border: #fecaca;
+
+  --shadow-sm: 0 1px 2px rgba(66, 11, 9, 0.06);
+  --shadow-md: 0 4px 14px rgba(66, 11, 9, 0.08);
+  --shadow-lg: 0 12px 40px rgba(66, 11, 9, 0.1);
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --font-body: 'Poppins', 'Inter', system-ui, sans-serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+
+  font-family: var(--font-body);
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+input:not([type='checkbox']):not([type='radio']):focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(73, 19, 24, 0.4);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid rgba(73, 19, 24, 0.5);
+  outline-offset: 2px;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+code {
+  font-family: var(--font-ui), ui-monospace, monospace;
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(66, 11, 9, 0.06);
+  color: var(--brand-burgundy);
+}

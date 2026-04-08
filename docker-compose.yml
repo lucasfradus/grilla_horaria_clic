@@ -1,0 +1,8 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: horarios-hot-clic-api
+    ports:
+      - "8000:8000"

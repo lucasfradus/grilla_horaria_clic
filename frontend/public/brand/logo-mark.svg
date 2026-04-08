@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="tm">
+  <title id="tm">Hot Clic</title>
+  <circle cx="32" cy="32" r="30" stroke="#EDECE7" stroke-width="1.5" opacity="0.85" />
+  <text
+    x="32"
+    y="41"
+    text-anchor="middle"
+    font-family="Arial Narrow, Helvetica Neue, Arial, sans-serif"
+    font-weight="700"
+    font-size="18"
+    letter-spacing="0.06em"
+    fill="#EDECE7"
+  >
+    HC
+  </text>
+</svg>

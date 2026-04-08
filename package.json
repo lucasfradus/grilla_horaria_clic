@@ -1,0 +1,10 @@
+{
+  "name": "horarios-hot-clic",
+  "private": true,
+  "scripts": {
+    "dev:api": "npm run dev --prefix backend",
+    "dev:web": "npm run dev --prefix frontend",
+    "dev:api:docker": "docker compose up --build api",
+    "dev:api:docker:down": "docker compose down"
+  }
+}
