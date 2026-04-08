@@ -11,8 +11,8 @@ export const publicBrand = {
   lineaMarca: 'Wellness club',
   pie: 'Consultá disponibilidad en recepción.',
 
-  /** Logo horizontal (palabra completa). Reemplazá `logo-hero.svg` por tu export oficial. */
-  logoUrl: '/brand/logo-hero.svg' as string,
+  /** Logo principal para la vista pública. */
+  logoUrl: '/brand/logo.png' as string,
   /** Isotipo / ícono; vacío para ocultar. */
   logoMarkUrl: '/brand/logo-mark.svg' as string,
   /** Texto alternativo del logo principal */
@@ -20,5 +20,4 @@ export const publicBrand = {
   /** Si no hay `logoUrl`, se muestra este texto con estilo Bebas */
   logoTexto: 'HOT',
 
-  manualUsuarioPath: '/Manual HOT CLIC.pdf',
 }

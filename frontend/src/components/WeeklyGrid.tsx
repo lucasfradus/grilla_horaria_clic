@@ -1,6 +1,7 @@
-import { useMemo, useState, type DragEvent } from 'react'
+import { useMemo } from 'react'
 import type { ClaseHorario } from '../types'
-import { DIAS, DRAG_MIME, parseDragPayload, type DragPayload } from '../types'
+import { DIAS } from '../types'
+import type { Actividad, Profesor } from '../types'
 import {
   GRID_END,
   GRID_START,
@@ -54,21 +55,25 @@ const classes: Record<
 export function WeeklyGrid({
   clases,
   variant,
-  onDropOnClase,
+  profesores = [],
+  actividades = [],
+  onAssignProfesor,
+  onAssignActividad,
   onClearProfesor,
   onClearActividad,
   onDeleteClase,
 }: {
   clases: ClaseHorario[]
   variant: Variant
-  onDropOnClase?: (claseId: number, payload: DragPayload) => void
+  profesores?: Profesor[]
+  actividades?: Actividad[]
+  onAssignProfesor?: (claseId: number, profesorId: number | null) => void
+  onAssignActividad?: (claseId: number, actividadId: number | null) => void
   onClearProfesor?: (claseId: number) => void
   onClearActividad?: (claseId: number) => void
   onDeleteClase?: (claseId: number) => void
 }) {
   const c = classes[variant]
-  const [dropOverId, setDropOverId] = useState<number | null>(null)
-  const adminDnD = variant === 'admin' && Boolean(onDropOnClase)
 
   const clasesPorDia = useMemo(() => {
     const m: Record<number, ClaseHorario[]> = {
@@ -93,7 +98,6 @@ export function WeeklyGrid({
     const hasP = cl.profesor != null
     if (!hasA && !hasP) parts.push('block--empty')
     else if (!hasA || !hasP) parts.push('block--partial')
-    if (adminDnD && dropOverId === cl.id) parts.push('block--drop-target')
     return parts.join(' ')
   }
 
@@ -156,11 +160,47 @@ export function WeeklyGrid({
     /* admin */
     return (
       <>
-        <strong>{act?.nombre ?? '— Actividad —'}</strong>
-        <span className={c.blockMeta}>
-          {prof?.nombre ?? '— Profesor —'}
-          {act ? ` · cupo ${act.cupo}` : ''}
-        </span>
+        {onAssignActividad ? (
+          <select
+            className="block-select"
+            value={act?.id ?? ''}
+            onChange={(e) => {
+              const v = e.target.value
+              onAssignActividad(cl.id, v ? Number(v) : null)
+            }}
+          >
+            <option value="">Actividad…</option>
+            {actividades.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.nombre} (cupo {a.cupo})
+              </option>
+            ))}
+          </select>
+        ) : (
+          <strong>{act?.nombre ?? '— Actividad —'}</strong>
+        )}
+        {onAssignProfesor ? (
+          <select
+            className="block-select"
+            value={prof?.id ?? ''}
+            onChange={(e) => {
+              const v = e.target.value
+              onAssignProfesor(cl.id, v ? Number(v) : null)
+            }}
+          >
+            <option value="">Profesor…</option>
+            {profesores.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nombre}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className={c.blockMeta}>
+            {prof?.nombre ?? '— Profesor —'}
+            {act ? ` · cupo ${act.cupo}` : ''}
+          </span>
+        )}
         <span className={c.blockTime}>
           {cl.hora_inicio.slice(0, 5)}–{cl.hora_fin.slice(0, 5)}
         </span>
@@ -220,32 +260,6 @@ export function WeeklyGrid({
                   className={blockClass(cl)}
                   style={{ top, height: Math.max(h, ROW_PX * 0.75) }}
                   title={blockTitle(cl)}
-                  onDragOver={
-                    adminDnD
-                      ? (e) => {
-                          e.preventDefault()
-                          e.dataTransfer.dropEffect = 'copy'
-                          setDropOverId(cl.id)
-                        }
-                      : undefined
-                  }
-                  onDragLeave={
-                    adminDnD
-                      ? () => {
-                          setDropOverId((cur) => (cur === cl.id ? null : cur))
-                        }
-                      : undefined
-                  }
-                  onDrop={
-                    adminDnD && onDropOnClase
-                      ? (e) => {
-                          e.preventDefault()
-                          setDropOverId(null)
-                          const payload = parseDragPayload(e)
-                          if (payload) onDropOnClase(cl.id, payload)
-                        }
-                      : undefined
-                  }
                 >
                   {variant === 'admin' && onDeleteClase ? (
                     <div className="block-toolbar">
@@ -301,9 +315,4 @@ export function WeeklyGrid({
       </div>
     </div>
   )
-}
-
-export function setDragPayload(e: DragEvent, payload: DragPayload) {
-  e.dataTransfer.setData(DRAG_MIME, JSON.stringify(payload))
-  e.dataTransfer.effectAllowed = 'copy'
 }

@@ -3,18 +3,18 @@
 .pub-page {
   --pub-ink: #420b09;
   --pub-wine: #57140f;
-  --pub-cream: #edece7;
   --pub-burgundy: #491318;
+  --pub-cream: #edece7;
   --pub-bg: var(--pub-cream);
-  --pub-hero-bg: linear-gradient(135deg, #420b09 0%, #491318 55%, #57140f 100%);
-  --pub-border: rgba(66, 11, 9, 0.18);
+  --pub-hero-bg: linear-gradient(130deg, var(--pub-ink) 0%, var(--pub-burgundy) 52%, var(--pub-wine) 100%);
+  --pub-border: rgba(66, 11, 9, 0.28);
   --pub-text: var(--pub-ink);
-  --pub-muted: #6b534e;
+  --pub-muted: color-mix(in srgb, var(--pub-ink) 72%, var(--pub-cream) 28%);
   --pub-on-dark: var(--pub-cream);
-  --pub-grid-line: rgba(73, 19, 24, 0.14);
-  --pub-surface: #ffffff;
+  --pub-grid-line: rgba(73, 19, 24, 0.2);
+  --pub-surface: color-mix(in srgb, var(--pub-cream) 92%, white 8%);
   --pub-block-a: var(--pub-wine);
-  --pub-block-b: var(--pub-ink);
+  --pub-block-b: var(--pub-burgundy);
   --pub-font: 'Poppins', 'Inter', system-ui, sans-serif;
   --pub-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
 
@@ -35,36 +35,32 @@
 .pub-hero-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.25rem 1.75rem;
+  padding: 1.45rem 1.25rem 1.25rem;
 }
 
 .pub-brand-block {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.7rem;
 }
 
 .pub-logo-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 1rem 1.25rem;
-  flex-wrap: wrap;
-}
-
-.pub-logo-mark-img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  flex-shrink: 0;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 .pub-logo-wordmark {
   display: block;
-  max-height: 3.75rem;
-  width: auto;
-  max-width: min(100%, 380px);
-  object-fit: contain;
-  object-position: left center;
+  width: min(100%, 240px);
+  height: 72px;
+  object-fit: cover;
+  object-position: center 50%;
+  opacity: 0.95;
 }
 
 .pub-logo-fallback {
@@ -84,7 +80,7 @@
 .pub-eyebrow {
   margin: 0;
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -95,43 +91,27 @@
 .pub-title {
   margin: 0;
   font-family: var(--pub-display);
-  font-size: clamp(2.5rem, 7vw, 3.5rem);
+  font-size: clamp(2rem, 5vw, 2.7rem);
   font-weight: 400;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1;
   color: var(--pub-on-dark);
 }
 
-.pub-title:not(.sr-only) {
-  margin-bottom: 0.35rem;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 .pub-tagline {
-  margin: 0.65rem 0 0;
-  font-size: 0.98rem;
-  font-weight: 500;
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: rgba(237, 236, 231, 0.92);
 }
 
 .pub-marca-line {
-  margin: 0.35rem 0 0;
+  margin: 0.25rem 0 0;
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: rgba(237, 236, 231, 0.75);
 }
@@ -142,14 +122,15 @@
   width: 100%;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 2rem;
+  background: radial-gradient(circle at top right, rgba(73, 19, 24, 0.1), transparent 45%);
 }
 
 .pub-banner {
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  background: rgba(185, 28, 28, 0.08);
-  border: 1px solid rgba(185, 28, 28, 0.25);
-  color: #7f1d1d;
+  background: color-mix(in srgb, var(--pub-cream) 84%, var(--pub-wine) 16%);
+  border: 1px solid color-mix(in srgb, var(--pub-ink) 70%, var(--pub-cream) 30%);
+  color: var(--pub-ink);
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
@@ -162,6 +143,11 @@
 
 .pub-panel {
   margin-top: 0.5rem;
+  padding: 0.9rem;
+  border: 1px solid var(--pub-border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--pub-cream) 94%, white 6%);
+  box-shadow: 0 16px 34px rgba(66, 11, 9, 0.08);
 }
 
 .pub-footnote {
@@ -193,7 +179,7 @@
   padding: 1rem 1.25rem 1.5rem;
   text-align: center;
   border-top: 1px solid var(--pub-border);
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--pub-cream) 90%, var(--pub-wine) 10%);
 }
 
 .pub-footer-muted {
@@ -213,17 +199,17 @@
 
 .pub-schedule-grid {
   display: grid;
-  grid-template-columns: 88px repeat(7, minmax(72px, 1fr));
-  min-width: 640px;
-  border: 1px solid var(--pub-border);
+  grid-template-columns: 96px repeat(7, minmax(86px, 1fr));
+  min-width: 760px;
+  border: 1px solid color-mix(in srgb, var(--pub-ink) 78%, var(--pub-cream) 22%);
   border-radius: 14px;
   overflow: hidden;
   background: var(--pub-surface);
-  box-shadow: 0 16px 40px rgba(66, 11, 9, 0.1);
+  box-shadow: 0 14px 30px rgba(66, 11, 9, 0.16);
 }
 
 .pub-corner {
-  background: rgba(237, 236, 231, 0.85);
+  background: color-mix(in srgb, var(--pub-cream) 84%, var(--pub-wine) 16%);
   border-bottom: 1px solid var(--pub-border);
   border-right: 1px solid var(--pub-border);
 }
@@ -236,8 +222,8 @@
   font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--pub-burgundy);
-  background: rgba(237, 236, 231, 0.65);
+  color: var(--pub-ink);
+  background: color-mix(in srgb, var(--pub-cream) 75%, var(--pub-wine) 25%);
   border-bottom: 1px solid var(--pub-border);
   border-right: 1px solid var(--pub-border);
 }
@@ -257,7 +243,7 @@
   justify-content: flex-end;
   line-height: 1.2;
   padding-top: 2px;
-  background: #faf9f6;
+  background: color-mix(in srgb, var(--pub-cream) 86%, var(--pub-burgundy) 14%);
 }
 
 .pub-day-column {
@@ -266,9 +252,9 @@
   background: repeating-linear-gradient(
     to bottom,
     transparent,
-    transparent calc(36px - 1px),
-    var(--pub-grid-line) calc(36px - 1px),
-    var(--pub-grid-line) 36px
+    transparent calc(44px - 1px),
+    var(--pub-grid-line) calc(44px - 1px),
+    var(--pub-grid-line) 44px
   );
 }
 
@@ -286,13 +272,13 @@
   color: var(--pub-cream);
   font-size: 0.72rem;
   line-height: 1.25;
-  box-shadow: 0 3px 10px rgba(66, 11, 9, 0.22);
+  box-shadow: 0 6px 14px rgba(66, 11, 9, 0.28);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 2px;
   z-index: 1;
-  border: 1px solid rgba(237, 236, 231, 0.15);
+  border: 1px solid rgba(237, 236, 231, 0.26);
 }
 
 .pub-block strong {

@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { WeeklyGrid, setDragPayload } from '../components/WeeklyGrid'
+import { WeeklyGrid } from '../components/WeeklyGrid'
 import { api } from '../api'
 import type { Actividad, ClaseHorario, Profesor } from '../types'
-import { DIAS, type DragPayload } from '../types'
-import { publicBrand } from '../publicBrand'
+import { DIAS } from '../types'
 import { nextConsecutiveFranja } from '../timeUtils'
 import '../App.css'
 
@@ -37,17 +36,25 @@ export function AdminPage() {
     void refresh()
   }, [refresh])
 
-  const onDropOnClase = useCallback(
-    async (claseId: number, payload: DragPayload) => {
+  const onAssignProfesor = useCallback(
+    async (claseId: number, profesorId: number | null) => {
       try {
-        if (payload.kind === 'profesor') {
-          await api.clases.patch(claseId, { profesor_id: payload.id })
-        } else {
-          await api.clases.patch(claseId, { actividad_id: payload.id })
-        }
+        await api.clases.patch(claseId, { profesor_id: profesorId })
         await refresh()
       } catch (e) {
-        alert(e instanceof Error ? e.message : 'Error al asignar')
+        alert(e instanceof Error ? e.message : 'Error al asignar profesor')
+      }
+    },
+    [refresh],
+  )
+
+  const onAssignActividad = useCallback(
+    async (claseId: number, actividadId: number | null) => {
+      try {
+        await api.clases.patch(claseId, { actividad_id: actividadId })
+        await refresh()
+      } catch (e) {
+        alert(e instanceof Error ? e.message : 'Error al asignar actividad')
       }
     },
     [refresh],
@@ -106,23 +113,13 @@ export function AdminPage() {
         <p className="admin-eyebrow">Hot Clic · administración</p>
         <h1>Horarios</h1>
         <p className="subtitle">
-          Primero generá franjas vacías (recurrentes o una puntual). Luego arrastrá actividades y
-          profesores desde el panel lateral sobre cada bloque.
+          Primero generá franjas vacías (recurrentes o una puntual). Luego asigná actividad y
+          profesor directamente en cada bloque de la grilla.
         </p>
         <div className="admin-header-actions">
           <Link to="/" className="btn btn-secondary btn-sm">
             Ver grilla pública
           </Link>
-          {publicBrand.manualUsuarioPath ? (
-            <a
-              href={encodeURI(publicBrand.manualUsuarioPath)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-ghost btn-sm"
-            >
-              Manual (PDF)
-            </a>
-          ) : null}
         </div>
         <p className="admin-share-line muted small">
           Compartí: <code>{publicUrls.home}</code> · <code>{publicUrls.horarios}</code>
@@ -165,7 +162,10 @@ export function AdminPage() {
             <WeeklyGrid
               clases={clases}
               variant="admin"
-              onDropOnClase={onDropOnClase}
+              profesores={profesores}
+              actividades={actividades}
+              onAssignProfesor={onAssignProfesor}
+              onAssignActividad={onAssignActividad}
               onClearProfesor={onClearProfesor}
               onClearActividad={onClearActividad}
               onDeleteClase={onDeleteClase}
@@ -173,17 +173,8 @@ export function AdminPage() {
           </section>
         </div>
 
-        <aside className="admin-sidebar" aria-label="Arrastrar a la grilla">
+        <aside className="admin-sidebar" aria-label="Datos base">
           <div className="sidebar-sticky">
-            <div className="sidebar-hint">
-              <span className="sidebar-hint-icon" aria-hidden>
-                ↓
-              </span>
-              <p>
-                <strong>Arrastrá</strong> una actividad o un profesor y <strong>soltalo</strong>{' '}
-                sobre la franja en la grilla.
-              </p>
-            </div>
             <SidebarProfesores
               profesores={profesores}
               onCreated={() => void refresh()}
@@ -402,7 +393,7 @@ function SidebarProfesores({
   return (
     <section className="panel sidebar-panel">
       <h2 className="panel-title panel-title--sm">Profesores</h2>
-      <p className="muted small">Arrastrá el nombre a una franja.</p>
+      <p className="muted small">Creá y administrá profesores.</p>
       <form onSubmit={submit} className="form compact-form">
         <input
           value={nombre}
@@ -423,11 +414,7 @@ function SidebarProfesores({
       <ul className="dnd-list">
         {profesores.map((p) => (
           <li key={p.id}>
-            <div
-              className="dnd-chip dnd-chip--prof"
-              draggable
-              onDragStart={(e) => setDragPayload(e, { kind: 'profesor', id: p.id })}
-            >
+            <div className="dnd-chip dnd-chip--prof">
               {p.nombre}
             </div>
             <button
@@ -485,7 +472,7 @@ function SidebarActividades({
   return (
     <section className="panel sidebar-panel">
       <h2 className="panel-title panel-title--sm">Actividades</h2>
-      <p className="muted small">Arrastrá el nombre a una franja (incluye cupo).</p>
+      <p className="muted small">Creá y administrá actividades (con cupo).</p>
       <form onSubmit={submit} className="form compact-form">
         <input
           value={nombre}
@@ -509,11 +496,7 @@ function SidebarActividades({
       <ul className="dnd-list">
         {actividades.map((a) => (
           <li key={a.id}>
-            <div
-              className="dnd-chip dnd-chip--act"
-              draggable
-              onDragStart={(e) => setDragPayload(e, { kind: 'actividad', id: a.id })}
-            >
+            <div className="dnd-chip dnd-chip--act">
               <span>{a.nombre}</span>
               <span className="dnd-chip-cupo">cupo {a.cupo}</span>
             </div>

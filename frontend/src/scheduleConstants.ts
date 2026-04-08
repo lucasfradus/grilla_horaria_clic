@@ -1,7 +1,7 @@
 export const GRID_START = 7 * 60
 export const GRID_END = 22 * 60
 export const SLOT_MINUTES = 30
-export const ROW_PX = 36
+export const ROW_PX = 44
 export const NUM_SLOTS = (GRID_END - GRID_START) / SLOT_MINUTES
 
 export function minutesFromTime(s: string): number {

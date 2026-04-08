@@ -31,9 +31,6 @@ export function PublicPage() {
     [clases],
   )
 
-  const hasWordmark = Boolean(publicBrand.logoUrl?.trim())
-  const hasMark = Boolean(publicBrand.logoMarkUrl?.trim())
-
   return (
     <div className="pub-page">
       <header className="pub-hero">
@@ -43,40 +40,14 @@ export function PublicPage() {
               <p className="pub-eyebrow">{publicBrand.eyebrow}</p>
             ) : null}
 
-            <div className="pub-logo-row">
-              {hasMark ? (
-                <img
-                  src={publicBrand.logoMarkUrl}
-                  alt=""
-                  className="pub-logo-mark-img"
-                  width={80}
-                  height={80}
-                  decoding="async"
-                />
-              ) : null}
-              {hasWordmark ? (
-                <img
-                  src={publicBrand.logoUrl}
-                  alt={publicBrand.logoAlt}
-                  className="pub-logo-wordmark"
-                  decoding="async"
-                />
-              ) : (
-                <span className="pub-logo-fallback" aria-hidden>
-                  {publicBrand.logoTexto}
-                </span>
-              )}
-            </div>
-
             <div className="pub-brand-text">
-              <h1 className={`pub-title ${hasWordmark ? 'sr-only' : ''}`}>
-                {publicBrand.nombreCentro}
-              </h1>
+              <h1 className="pub-title">{publicBrand.nombreCentro}</h1>
               <p className="pub-tagline">{publicBrand.tagline}</p>
               {publicBrand.lineaMarca ? (
                 <p className="pub-marca-line">{publicBrand.lineaMarca}</p>
               ) : null}
             </div>
+
           </div>
         </div>
       </header>
@@ -105,18 +76,6 @@ export function PublicPage() {
 
         <p className="pub-footnote">{publicBrand.pie}</p>
 
-        {publicBrand.manualUsuarioPath ? (
-          <p className="pub-admin-hint">
-            <a
-              href={encodeURI(publicBrand.manualUsuarioPath)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pub-admin-link"
-            >
-              Manual de usuario
-            </a>
-          </p>
-        ) : null}
       </main>
 
       <footer className="pub-footer">
