@@ -1,7 +1,16 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Time, UniqueConstraint
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Time, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from .database import Base
+
+
+class AppConfig(Base):
+    """Fila única (id=1): preferencias que afectan la vista pública."""
+
+    __tablename__ = "app_config"
+
+    id = Column(Integer, primary_key=True)
+    ocultar_profesor_vista_publica = Column(Boolean, nullable=False, default=False)
 
 
 class Profesor(Base):

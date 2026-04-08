@@ -92,3 +92,11 @@ class ClaseHorarioRead(BaseModel):
     actividad: ActividadRead | None
 
     model_config = {"from_attributes": True}
+
+
+class AppConfigRead(BaseModel):
+    ocultar_profesor_vista_publica: bool
+
+
+class AppConfigPatch(BaseModel):
+    ocultar_profesor_vista_publica: bool | None = None

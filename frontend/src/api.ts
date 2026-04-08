@@ -1,4 +1,4 @@
-import type { Actividad, ClaseHorario, Profesor } from './types'
+import type { Actividad, AppConfig, ClaseHorario, Profesor } from './types'
 
 /**
  * Base del API. Si `VITE_API_URL` está vacío o no existe:
@@ -51,6 +51,11 @@ async function req<T>(
 
 export const api = {
   health: () => req<{ ok: boolean }>('/health'),
+  config: {
+    get: () => req<AppConfig>('/config'),
+    update: (body: { ocultar_profesor_vista_publica?: boolean }) =>
+      req<AppConfig>('/config', { method: 'POST', body: JSON.stringify(body) }),
+  },
   profesores: {
     list: () => req<Profesor[]>('/profesores'),
     create: (body: { nombre: string; email?: string | null }) =>

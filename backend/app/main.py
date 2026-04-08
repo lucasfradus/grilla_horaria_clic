@@ -15,6 +15,16 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Horarios Centro", version="0.2.0")
 
+
+def _get_or_create_config(db: Session) -> models.AppConfig:
+    row = db.get(models.AppConfig, 1)
+    if row is None:
+        row = models.AppConfig(id=1, ocultar_profesor_vista_publica=False)
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+    return row
+
 DEFAULT_CORS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -40,6 +50,35 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+# --- Configuración (vista pública) ---
+
+
+@app.get("/config", response_model=schemas.AppConfigRead)
+def obtener_config(db: Session = Depends(get_db)):
+    row = _get_or_create_config(db)
+    return schemas.AppConfigRead(
+        ocultar_profesor_vista_publica=bool(row.ocultar_profesor_vista_publica),
+    )
+
+
+@app.patch("/config", response_model=schemas.AppConfigRead)
+@app.post("/config", response_model=schemas.AppConfigRead)
+def actualizar_config(
+    body: schemas.AppConfigPatch, db: Session = Depends(get_db)
+):
+    row = _get_or_create_config(db)
+    data = body.model_dump(exclude_unset=True)
+    if "ocultar_profesor_vista_publica" in data:
+        row.ocultar_profesor_vista_publica = bool(
+            data["ocultar_profesor_vista_publica"]
+        )
+    db.commit()
+    db.refresh(row)
+    return schemas.AppConfigRead(
+        ocultar_profesor_vista_publica=bool(row.ocultar_profesor_vista_publica),
+    )
 
 
 # --- Profesores ---

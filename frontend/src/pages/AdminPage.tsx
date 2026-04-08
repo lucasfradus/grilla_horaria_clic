@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { WeeklyGrid } from '../components/WeeklyGrid'
 import { api } from '../api'
-import type { Actividad, ClaseHorario, Profesor } from '../types'
+import type { Actividad, AppConfig, ClaseHorario, Profesor } from '../types'
 import { DIAS } from '../types'
+import { publicBrand } from '../publicBrand'
 import { nextConsecutiveFranja } from '../timeUtils'
 import '../App.css'
 
@@ -11,20 +12,27 @@ export function AdminPage() {
   const [profesores, setProfesores] = useState<Profesor[]>([])
   const [actividades, setActividades] = useState<Actividad[]>([])
   const [clases, setClases] = useState<ClaseHorario[]>([])
+  const [vistaPublicaConfig, setVistaPublicaConfig] = useState<AppConfig>({
+    ocultar_profesor_vista_publica: false,
+  })
   const [err, setErr] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(async () => {
     setErr(null)
     try {
-      const [p, a, c] = await Promise.all([
+      const [p, a, c, cfg] = await Promise.all([
         api.profesores.list(),
         api.actividades.list(),
         api.clases.list(),
+        api.config.get().catch(() => null),
       ])
       setProfesores(p)
       setActividades(a)
       setClases(c)
+      setVistaPublicaConfig(
+        cfg ?? { ocultar_profesor_vista_publica: false },
+      )
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Error al cargar datos')
     } finally {
@@ -110,7 +118,13 @@ export function AdminPage() {
   return (
     <div className="app app--admin-flow">
       <header className="header admin-header-card">
-        <p className="admin-eyebrow">Hot Clic · administración</p>
+        <div className="admin-brand-block" aria-label="Marca">
+          <p className="admin-brand-greet">{publicBrand.tituloSaludo}</p>
+          <p className="admin-brand-name">
+            {publicBrand.nombreCentro}
+            <span className="admin-brand-suffix"> · administración</span>
+          </p>
+        </div>
         <h1>Horarios</h1>
         <p className="subtitle">
           Primero generá franjas vacías (recurrentes o una puntual). Luego asigná actividad y
@@ -120,6 +134,9 @@ export function AdminPage() {
           <Link to="/" className="btn btn-secondary btn-sm">
             Ver grilla pública
           </Link>
+          <a href="#admin-vista-publica-config" className="btn btn-ghost btn-sm">
+            Ocultar profesora (vista pública)
+          </a>
         </div>
         <p className="admin-share-line muted small">
           Compartí: <code>{publicUrls.home}</code> · <code>{publicUrls.horarios}</code>
@@ -175,6 +192,10 @@ export function AdminPage() {
 
         <aside className="admin-sidebar" aria-label="Datos base">
           <div className="sidebar-sticky">
+            <SidebarVistaPublica
+              config={vistaPublicaConfig}
+              onUpdated={setVistaPublicaConfig}
+            />
             <SidebarProfesores
               profesores={profesores}
               onCreated={() => void refresh()}
@@ -355,6 +376,51 @@ function FormUnaFranja({ onCreated }: { onCreated: () => void }) {
         Agregar franja
       </button>
     </form>
+  )
+}
+
+function SidebarVistaPublica({
+  config,
+  onUpdated,
+}: {
+  config: AppConfig
+  onUpdated: (c: AppConfig) => void
+}) {
+  const [busy, setBusy] = useState(false)
+
+  async function setOcultar(value: boolean) {
+    setBusy(true)
+    try {
+      const next = await api.config.update({
+        ocultar_profesor_vista_publica: value,
+      })
+      onUpdated(next)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'No se pudo guardar la configuración')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <section
+      className="panel sidebar-panel"
+      id="admin-vista-publica-config"
+    >
+      <h2 className="panel-title panel-title--sm">Vista pública</h2>
+      <p className="muted small">
+        Afecta solo la grilla que ven los visitantes (no el panel de administración).
+      </p>
+      <label className="admin-config-check">
+        <input
+          type="checkbox"
+          checked={config.ocultar_profesor_vista_publica}
+          disabled={busy}
+          onChange={(e) => void setOcultar(e.target.checked)}
+        />
+        <span>Ocultar nombre de la profesora</span>
+      </label>
+    </section>
   )
 }
 

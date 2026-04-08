@@ -6,6 +6,8 @@
  */
 export const publicBrand = {
   eyebrow: 'HOT STUDIO & RECOVERY ROOM',
+  /** Primera línea del título principal (vista pública / admin). */
+  tituloSaludo: "Hi, I'm",
   nombreCentro: 'Hot Clic',
   tagline: 'Horarios semanales · cupos por clase',
   lineaMarca: 'Wellness club',

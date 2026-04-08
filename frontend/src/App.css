@@ -22,7 +22,7 @@
   --block-b: #374151;
   --font-body: 'Poppins', system-ui, sans-serif;
   --font-subtitle: 'Inter', system-ui, sans-serif;
-  --font-display: 'Helios', 'Bebas Neue', 'Arial Narrow', system-ui, sans-serif;
+  --font-display: 'Helios', var(--font-subtitle), 'Arial Narrow', system-ui, sans-serif;
 
   max-width: 1400px;
   background: linear-gradient(180deg, #f8f9fb 0%, var(--bg) 28%);
@@ -72,14 +72,38 @@
   padding: 0.5rem 0 1rem;
 }
 
-.admin-eyebrow {
-  margin: 0 0 0.35rem;
+.admin-brand-block {
+  margin: 0 0 0.5rem;
+}
+
+.admin-brand-greet {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-subtitle);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #6b7280;
+}
+
+.admin-brand-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.admin-brand-suffix {
   font-family: var(--font-subtitle);
   font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #6b7280;
+  vertical-align: middle;
 }
 
 .header {
@@ -607,6 +631,22 @@
 
 .sidebar-panel:last-child {
   margin-bottom: 0;
+}
+
+.admin-config-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.admin-config-check input {
+  margin-top: 0.2em;
+  flex-shrink: 0;
 }
 
 .compact-form {

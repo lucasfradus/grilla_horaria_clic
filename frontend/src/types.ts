@@ -13,6 +13,10 @@ export type Actividad = {
   cupo: number
 }
 
+export type AppConfig = {
+  ocultar_profesor_vista_publica: boolean
+}
+
 export type ClaseHorario = {
   id: number
   dia_semana: number

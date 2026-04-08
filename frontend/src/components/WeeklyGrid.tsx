@@ -57,6 +57,7 @@ export function WeeklyGrid({
   variant,
   profesores = [],
   actividades = [],
+  ocultarProfesorVistaPublica = false,
   onAssignProfesor,
   onAssignActividad,
   onClearProfesor,
@@ -67,6 +68,8 @@ export function WeeklyGrid({
   variant: Variant
   profesores?: Profesor[]
   actividades?: Actividad[]
+  /** Solo `variant="public"`: no mostrar nombre de la profesora en los bloques. */
+  ocultarProfesorVistaPublica?: boolean
   onAssignProfesor?: (claseId: number, profesorId: number | null) => void
   onAssignActividad?: (claseId: number, actividadId: number | null) => void
   onClearProfesor?: (claseId: number) => void
@@ -104,6 +107,12 @@ export function WeeklyGrid({
   function blockTitle(cl: ClaseHorario): string {
     const a = cl.actividad?.nombre ?? 'Sin actividad'
     const p = cl.profesor?.nombre ?? 'Sin profesor'
+    if (variant === 'public' && ocultarProfesorVistaPublica) {
+      if (cl.actividad) {
+        return cl.profesor ? `${a} · cupo ${cl.actividad.cupo}` : a
+      }
+      return a
+    }
     return `${a} · ${p}`
   }
 
@@ -116,7 +125,9 @@ export function WeeklyGrid({
           <>
             <strong>{act.nombre}</strong>
             <span className={c.blockMeta}>
-              {prof.nombre} · cupo {act.cupo}
+              {ocultarProfesorVistaPublica
+                ? `cupo ${act.cupo}`
+                : `${prof.nombre} · cupo ${act.cupo}`}
             </span>
             <span className={c.blockTime}>
               {cl.hora_inicio.slice(0, 5)}–{cl.hora_fin.slice(0, 5)}
@@ -139,7 +150,9 @@ export function WeeklyGrid({
         return (
           <>
             <strong>Actividad pendiente</strong>
-            <span className={c.blockMeta}>{prof.nombre}</span>
+            {!ocultarProfesorVistaPublica ? (
+              <span className={c.blockMeta}>{prof.nombre}</span>
+            ) : null}
             <span className={c.blockTime}>
               {cl.hora_inicio.slice(0, 5)}–{cl.hora_fin.slice(0, 5)}
             </span>

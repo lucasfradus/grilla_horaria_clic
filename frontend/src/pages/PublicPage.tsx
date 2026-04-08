@@ -1,20 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { WeeklyGrid } from '../components/WeeklyGrid'
 import { api } from '../api'
-import type { ClaseHorario } from '../types'
+import type { AppConfig, ClaseHorario } from '../types'
 import { publicBrand } from '../publicBrand'
 import '../publicPage.css'
 
 export function PublicPage() {
   const [clases, setClases] = useState<ClaseHorario[]>([])
+  const [config, setConfig] = useState<AppConfig | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
     setErr(null)
     try {
-      const c = await api.clases.list()
+      const [c, cfg] = await Promise.all([
+        api.clases.list(),
+        api.config.get().catch(() => ({ ocultar_profesor_vista_publica: false })),
+      ])
       setClases(c)
+      setConfig(cfg)
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'No se pudieron cargar los horarios.')
     } finally {
@@ -36,13 +41,16 @@ export function PublicPage() {
       <header className="pub-hero">
         <div className="pub-hero-inner">
           <div className="pub-brand-block">
-            {publicBrand.eyebrow ? (
-              <p className="pub-eyebrow">{publicBrand.eyebrow}</p>
-            ) : null}
+          <p className="pub-tagline">{publicBrand.tagline}</p>
+            
 
             <div className="pub-brand-text">
-              <h1 className="pub-title">{publicBrand.nombreCentro}</h1>
-              <p className="pub-tagline">{publicBrand.tagline}</p>
+              <h1 className="pub-title-stack">
+                <span className="pub-title-name">{publicBrand.nombreCentro}</span>
+              </h1>
+              {publicBrand.eyebrow ? (
+              <p className="pub-eyebrow">{publicBrand.eyebrow}</p>
+            ) : null}
               {publicBrand.lineaMarca ? (
                 <p className="pub-marca-line">{publicBrand.lineaMarca}</p>
               ) : null}
@@ -70,7 +78,13 @@ export function PublicPage() {
 
         {!loading && !err && clasesPublicas.length > 0 ? (
           <section className="pub-panel" aria-label="Grilla semanal">
-            <WeeklyGrid clases={clasesPublicas} variant="public" />
+            <WeeklyGrid
+              clases={clasesPublicas}
+              variant="public"
+              ocultarProfesorVistaPublica={
+                config?.ocultar_profesor_vista_publica ?? false
+              }
+            />
           </section>
         ) : null}
 

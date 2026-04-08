@@ -46,7 +46,7 @@
   --font-body: 'Poppins', system-ui, sans-serif;
   --font-subtitle: 'Inter', system-ui, sans-serif;
   --font-ui: 'Inter', system-ui, sans-serif;
-  --font-display: 'Helios', 'Bebas Neue', 'Arial Narrow', system-ui, sans-serif;
+  --font-display: 'Helios', var(--font-subtitle), 'Arial Narrow', system-ui, sans-serif;
 
   font-family: var(--font-body);
   line-height: 1.5;
