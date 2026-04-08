@@ -1,4 +1,4 @@
-/* HOT CLIC — vista pública (manual: #420B09 #57140F #EDECE7 #491318 · Poppins / Inter / Bebas Neue) */
+/* Vista pública · Helios (títulos) · Inter (subtítulos) · Poppins (texto) */
 
 .pub-page {
   --pub-ink: #420b09;
@@ -15,8 +15,9 @@
   --pub-surface: color-mix(in srgb, var(--pub-cream) 92%, white 8%);
   --pub-block-a: var(--pub-wine);
   --pub-block-b: var(--pub-burgundy);
-  --pub-font: 'Poppins', 'Inter', system-ui, sans-serif;
-  --pub-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+  --pub-font: 'Poppins', system-ui, sans-serif;
+  --pub-subtitle: 'Inter', system-ui, sans-serif;
+  --pub-display: 'Helios', 'Bebas Neue', 'Arial Narrow', system-ui, sans-serif;
 
   min-height: 100vh;
   display: flex;
@@ -66,7 +67,7 @@
 .pub-logo-fallback {
   font-family: var(--pub-display);
   font-size: clamp(2.2rem, 7vw, 3.25rem);
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--pub-on-dark);
@@ -79,7 +80,7 @@
 
 .pub-eyebrow {
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--pub-subtitle);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.28em;
@@ -92,7 +93,7 @@
   margin: 0;
   font-family: var(--pub-display);
   font-size: clamp(2rem, 5vw, 2.7rem);
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1;
@@ -101,6 +102,7 @@
 
 .pub-tagline {
   margin: 0.25rem 0 0;
+  font-family: var(--pub-subtitle);
   font-size: 0.9rem;
   font-weight: 400;
   color: rgba(237, 236, 231, 0.92);
@@ -108,7 +110,7 @@
 
 .pub-marca-line {
   margin: 0.25rem 0 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--pub-subtitle);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.15em;
@@ -161,7 +163,7 @@
   margin: 1rem 0 0;
   text-align: center;
   font-size: 0.8rem;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--pub-subtitle);
 }
 
 .pub-admin-link {
@@ -187,7 +189,7 @@
   color: var(--pub-muted);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--pub-subtitle);
 }
 
 /* Grilla pública */
@@ -217,7 +219,7 @@
 .pub-day-head {
   padding: 0.55rem 0.35rem;
   text-align: center;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--pub-subtitle);
   font-weight: 700;
   font-size: 0.68rem;
   letter-spacing: 0.1em;
@@ -234,6 +236,7 @@
 
 .pub-time-gutter {
   padding: 0 0.4rem 0 0.5rem;
+  font-family: var(--pub-subtitle);
   font-size: 0.64rem;
   color: var(--pub-muted);
   border-right: 1px solid var(--pub-border);

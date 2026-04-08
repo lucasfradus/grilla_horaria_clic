@@ -1,4 +1,16 @@
-/* HOT CLIC — paleta manual de marca: #420B09 #57140F #EDECE7 #491318 · Poppins + Inter · display: Bebas Neue (sustituto web de Helios Bold) */
+/* Tipografía: Helios Bold (títulos) · Inter (subtítulos) · Poppins (texto). Helios: colocá Helios-Bold.woff2 en /public/fonts/ */
+
+@font-face {
+  font-family: 'Helios';
+  src:
+    local('Helios Bold'),
+    local('Helios-Bold'),
+    url('/fonts/Helios-Bold.woff2') format('woff2'),
+    url('/fonts/Helios-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --brand-ink: #420b09;
@@ -31,9 +43,10 @@
   --radius: 12px;
   --radius-sm: 8px;
 
-  --font-body: 'Poppins', 'Inter', system-ui, sans-serif;
+  --font-body: 'Poppins', system-ui, sans-serif;
+  --font-subtitle: 'Inter', system-ui, sans-serif;
   --font-ui: 'Inter', system-ui, sans-serif;
-  --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+  --font-display: 'Helios', 'Bebas Neue', 'Arial Narrow', system-ui, sans-serif;
 
   font-family: var(--font-body);
   line-height: 1.5;

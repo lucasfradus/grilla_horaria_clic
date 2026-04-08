@@ -17,7 +17,7 @@ export const publicBrand = {
   logoMarkUrl: '/brand/logo-mark.svg' as string,
   /** Texto alternativo del logo principal */
   logoAlt: 'Hot Clic',
-  /** Si no hay `logoUrl`, se muestra este texto con estilo Bebas */
+  /** Si no hay `logoUrl`, se muestra este texto con estilo display (Helios / fallback) */
   logoTexto: 'HOT',
 
 }
