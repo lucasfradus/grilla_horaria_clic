@@ -11,6 +11,7 @@ export type Actividad = {
   nombre: string
   descripcion: string | null
   cupo: number
+  es_hot: boolean
 }
 
 export type AppConfig = {

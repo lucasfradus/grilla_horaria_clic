@@ -127,8 +127,8 @@ export function AdminPage() {
         </div>
         <h1>Horarios</h1>
         <p className="subtitle">
-          Primero generá franjas vacías (recurrentes o una puntual). Luego asigná actividad y
-          profesor directamente en cada bloque de la grilla.
+          Primero generá franjas vacías recurrentes. Luego asigná actividad y profesor
+          directamente en cada bloque de la grilla.
         </p>
         <div className="admin-header-actions">
           <Link to="/" className="btn btn-secondary btn-sm">
@@ -168,10 +168,19 @@ export function AdminPage() {
             <FormRecurrencia onCreated={() => void refresh()} />
           </section>
 
-          <section className="panel">
-            <h2 className="panel-title">Agregar una franja</h2>
-            <p className="muted small">Un solo día y horario, sin profesor ni actividad.</p>
-            <FormUnaFranja onCreated={() => void refresh()} />
+          <PanelCargaDemo onDone={() => void refresh()} />
+
+          <section className="admin-abm-grid" aria-label="ABM de profesores y actividades">
+            <SidebarProfesores
+              profesores={profesores}
+              onCreated={() => void refresh()}
+              onRemoved={() => void refresh()}
+            />
+            <SidebarActividades
+              actividades={actividades}
+              onCreated={() => void refresh()}
+              onRemoved={() => void refresh()}
+            />
           </section>
 
           <section className="panel panel--grid">
@@ -188,28 +197,91 @@ export function AdminPage() {
               onDeleteClase={onDeleteClase}
             />
           </section>
+          <SidebarVistaPublica
+            config={vistaPublicaConfig}
+            onUpdated={setVistaPublicaConfig}
+          />
         </div>
-
-        <aside className="admin-sidebar" aria-label="Datos base">
-          <div className="sidebar-sticky">
-            <SidebarVistaPublica
-              config={vistaPublicaConfig}
-              onUpdated={setVistaPublicaConfig}
-            />
-            <SidebarProfesores
-              profesores={profesores}
-              onCreated={() => void refresh()}
-              onRemoved={() => void refresh()}
-            />
-            <SidebarActividades
-              actividades={actividades}
-              onCreated={() => void refresh()}
-              onRemoved={() => void refresh()}
-            />
-          </div>
-        </aside>
       </div>
     </div>
+  )
+}
+
+const SEED_TOKEN_STORAGE = 'horarios_seed_token'
+
+function PanelCargaDemo({ onDone }: { onDone: () => void }) {
+  const [token, setToken] = useState(() =>
+    typeof window !== 'undefined' ? sessionStorage.getItem(SEED_TOKEN_STORAGE) ?? '' : '',
+  )
+  const [replace, setReplace] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [lastMsg, setLastMsg] = useState<string | null>(null)
+
+  async function runSeed() {
+    const t = token.trim()
+    if (!t) {
+      alert('Ingresá el token (variable SEED_SECRET_TOKEN en el servidor).')
+      return
+    }
+    if (
+      replace &&
+      !confirm(
+        'Se borrarán todas las clases, actividades y profesores y se cargará el paquete demo. ¿Continuar?',
+      )
+    ) {
+      return
+    }
+    setBusy(true)
+    setLastMsg(null)
+    try {
+      const r = await api.seedDemo(t, replace)
+      sessionStorage.setItem(SEED_TOKEN_STORAGE, t)
+      setLastMsg(
+        `Listo: ${r.profesores} profes, ${r.actividades} actividades, ${r.clases} franjas${r.replace ? ' (reemplazo)' : ''}.`,
+      )
+      onDone()
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Error')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <section className="panel admin-seed-panel" aria-label="Carga de datos demo">
+      <h2 className="panel-title">Carga inicial (demo)</h2>
+      <p className="muted small">
+        Inserta los profesores, actividades y horarios de la grilla de referencia (Lun–Vie mañana y
+        tarde). En Railway definí <code>SEED_SECRET_TOKEN</code> y pegá el mismo valor abajo.
+      </p>
+      <div className="admin-seed-fields">
+        <label className="admin-seed-token-label">
+          <span>Token</span>
+          <input
+            type="password"
+            autoComplete="off"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            placeholder="SEED_SECRET_TOKEN"
+          />
+        </label>
+        <label className="admin-config-check admin-seed-replace">
+          <input
+            type="checkbox"
+            checked={replace}
+            onChange={(e) => setReplace(e.target.checked)}
+          />
+          <span>
+            Reemplazar todo (borra clases, actividades y profesores antes de cargar). Usá esto si ya
+            probaste franjas vacías o datos viejos.
+          </span>
+        </label>
+        <button type="button" className="btn btn-secondary" disabled={busy} onClick={() => void runSeed()}>
+          {busy ? 'Cargando…' : 'Cargar datos demo'}
+        </button>
+      </div>
+      {lastMsg ? <p className="admin-seed-msg muted small">{lastMsg}</p> : null}
+    </section>
   )
 }
 
@@ -324,56 +396,6 @@ function FormRecurrencia({ onCreated }: { onCreated: () => void }) {
       </div>
       <button type="submit" className="btn btn-primary" disabled={busy}>
         {busy ? 'Generando…' : 'Generar franjas vacías'}
-      </button>
-    </form>
-  )
-}
-
-function FormUnaFranja({ onCreated }: { onCreated: () => void }) {
-  const [dia, setDia] = useState(0)
-  const [inicio, setInicio] = useState('09:00')
-  const [fin, setFin] = useState('10:00')
-  const [busy, setBusy] = useState(false)
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault()
-    setBusy(true)
-    try {
-      await api.clases.createVacia({
-        dia_semana: dia,
-        hora_inicio: normalizeTimeForApi(inicio),
-        hora_fin: normalizeTimeForApi(fin),
-      })
-      onCreated()
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Error')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  return (
-    <form className="form row-form row-form--una-franja" onSubmit={submit}>
-      <label>
-        Día
-        <select value={dia} onChange={(e) => setDia(Number(e.target.value))}>
-          {DIAS.map((d) => (
-            <option key={d.value} value={d.value}>
-              {d.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Desde
-        <input type="time" value={inicio} onChange={(e) => setInicio(e.target.value)} required />
-      </label>
-      <label>
-        Hasta
-        <input type="time" value={fin} onChange={(e) => setFin(e.target.value)} required />
-      </label>
-      <button type="submit" className="btn btn-secondary" disabled={busy}>
-        Agregar franja
       </button>
     </form>
   )
@@ -512,7 +534,9 @@ function SidebarActividades({
   onRemoved: () => void
 }) {
   const [nombre, setNombre] = useState('')
+  const [descripcion, setDescripcion] = useState('')
   const [cupo, setCupo] = useState(10)
+  const [esHot, setEsHot] = useState(false)
   const [busy, setBusy] = useState(false)
 
   async function submit(e: React.FormEvent) {
@@ -522,11 +546,14 @@ function SidebarActividades({
     try {
       await api.actividades.create({
         nombre: nombre.trim(),
-        descripcion: null,
+        descripcion: descripcion.trim() || null,
         cupo,
+        es_hot: esHot,
       })
       setNombre('')
+      setDescripcion('')
       setCupo(10)
+      setEsHot(false)
       onCreated()
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Error')
@@ -538,34 +565,105 @@ function SidebarActividades({
   return (
     <section className="panel sidebar-panel">
       <h2 className="panel-title panel-title--sm">Actividades</h2>
-      <p className="muted small">Creá y administrá actividades (con cupo).</p>
-      <form onSubmit={submit} className="form compact-form">
-        <input
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          placeholder="Nueva actividad"
-          maxLength={200}
-        />
-        <input
-          type="number"
-          min={1}
-          max={500}
-          value={cupo}
-          onChange={(e) => setCupo(Number(e.target.value))}
-          title="Cupo"
-          className="input-cupo"
-        />
-        <button type="submit" disabled={busy} className="btn btn-small btn-primary" title="Agregar">
-          +
+      <p className="muted small">Creá y administrá actividades con cupo y una descripción breve.</p>
+      <form onSubmit={submit} className="form actividad-alta-form">
+        <div className="actividad-alta-field">
+          <label htmlFor="actividad-alta-nombre" className="actividad-alta-label">
+            Nombre
+          </label>
+          <input
+            id="actividad-alta-nombre"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Ej. Funcional mañana"
+            maxLength={200}
+            autoComplete="off"
+          />
+        </div>
+        <div className="actividad-alta-field">
+          <label htmlFor="actividad-alta-desc" className="actividad-alta-label">
+            Descripción <span className="actividad-alta-label-optional">(opcional)</span>
+          </label>
+          <input
+            id="actividad-alta-desc"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            placeholder="Texto corto que verán en la grilla"
+            maxLength={500}
+            autoComplete="off"
+          />
+        </div>
+        <div className="actividad-alta-field actividad-alta-field--inline">
+          <label htmlFor="actividad-alta-cupo" className="actividad-alta-label">
+            Cupo
+          </label>
+          <input
+            id="actividad-alta-cupo"
+            type="number"
+            min={1}
+            max={500}
+            value={cupo}
+            onChange={(e) => setCupo(Number(e.target.value))}
+            title="Plazas máximas para esta actividad"
+            className="input-cupo"
+          />
+          <span className="actividad-alta-hint-inline muted small">personas por clase</span>
+        </div>
+        <div className="actividad-hot-block" role="group" aria-labelledby="actividad-alta-hot-title">
+          <label className="actividad-hot-block__main">
+            <input
+              type="checkbox"
+              checked={esHot}
+              onChange={(e) => setEsHot(e.target.checked)}
+              aria-describedby="actividad-alta-hot-desc"
+            />
+            <span className="actividad-hot-block__text">
+              <span id="actividad-alta-hot-title" className="actividad-hot-block__title">
+                Destacar como Hot
+              </span>
+              <span id="actividad-alta-hot-desc" className="actividad-hot-block__hint muted small">
+                En la vista pública se muestra resaltada para que destaque entre el resto de actividades.
+              </span>
+            </span>
+          </label>
+        </div>
+        <button
+          type="submit"
+          disabled={busy}
+          className="btn btn-primary actividad-alta-submit"
+        >
+          {busy ? 'Guardando…' : 'Guardar actividad'}
         </button>
       </form>
       <ul className="dnd-list">
         {actividades.map((a) => (
           <li key={a.id}>
             <div className="dnd-chip dnd-chip--act">
-              <span>{a.nombre}</span>
+              <span className="dnd-chip-act-title">
+                {a.nombre}
+                {a.es_hot ? <span className="dnd-chip-hot">Hot</span> : null}
+              </span>
+              {a.descripcion ? (
+                <span className="dnd-chip-desc">{a.descripcion}</span>
+              ) : null}
               <span className="dnd-chip-cupo">cupo {a.cupo}</span>
             </div>
+            <label className="admin-act-hot-row">
+              <input
+                type="checkbox"
+                checked={a.es_hot === true}
+                title="Hot: destacar en la vista pública"
+                onChange={async (e) => {
+                  const next = e.target.checked
+                  try {
+                    await api.actividades.update(a.id, { es_hot: next })
+                    onCreated()
+                  } catch (err) {
+                    alert(err instanceof Error ? err.message : 'Error')
+                  }
+                }}
+              />
+            </label>
             <button
               type="button"
               className="btn btn-icon danger-soft"

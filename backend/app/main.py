@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -9,11 +11,30 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from . import models, schemas
-from .database import Base, engine, get_db
+from .database import get_db
+from .db_init import init_db
+from .seed_default import SeedError, apply_seed
 
-Base.metadata.create_all(bind=engine)
+init_db()
 
 app = FastAPI(title="Horarios Centro", version="0.2.0")
+
+
+def _verify_seed_token(
+    x_seed_token: Annotated[str | None, Header(alias="X-Seed-Token")] = None,
+) -> None:
+    expected = os.environ.get("SEED_SECRET_TOKEN", "").strip()
+    if not expected:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Seed deshabilitado: definí SEED_SECRET_TOKEN en el servidor "
+                "(Railway → Variables)."
+            ),
+        )
+    if not x_seed_token or x_seed_token != expected:
+        raise HTTPException(status_code=403, detail="Token incorrecto")
+    return None
 
 
 def _get_or_create_config(db: Session) -> models.AppConfig:
@@ -139,6 +160,7 @@ def crear_actividad(a: schemas.ActividadCreate, db: Session = Depends(get_db)):
         nombre=a.nombre.strip(),
         descripcion=a.descripcion,
         cupo=a.cupo,
+        es_hot=bool(a.es_hot),
     )
     db.add(row)
     db.commit()
@@ -160,15 +182,24 @@ def obtener_actividad(actividad_id: int, db: Session = Depends(get_db)):
 
 
 @app.patch("/actividades/{actividad_id}", response_model=schemas.ActividadRead)
+@app.post("/actividades/{actividad_id}", response_model=schemas.ActividadRead)
 def actualizar_actividad(
-    actividad_id: int, a: schemas.ActividadCreate, db: Session = Depends(get_db)
+    actividad_id: int, body: schemas.ActividadPatch, db: Session = Depends(get_db)
 ):
     row = db.get(models.Actividad, actividad_id)
     if not row:
         raise HTTPException(status_code=404, detail="Actividad no encontrada")
-    row.nombre = a.nombre.strip()
-    row.descripcion = a.descripcion
-    row.cupo = a.cupo
+    data = body.model_dump(exclude_unset=True)
+    if not data:
+        raise HTTPException(status_code=400, detail="Nada para actualizar")
+    if "nombre" in data:
+        row.nombre = data["nombre"].strip()
+    if "descripcion" in data:
+        row.descripcion = data["descripcion"]
+    if "cupo" in data:
+        row.cupo = data["cupo"]
+    if "es_hot" in data:
+        row.es_hot = bool(data["es_hot"])
     db.commit()
     db.refresh(row)
     return row
@@ -313,6 +344,29 @@ def borrar_clase(clase_id: int, db: Session = Depends(get_db)):
     db.delete(row)
     db.commit()
     return None
+
+
+@app.post("/admin/seed", response_model=schemas.SeedResult)
+def admin_seed_demo(
+    body: schemas.SeedRequest,
+    db: Session = Depends(get_db),
+    _auth_ok: None = Depends(_verify_seed_token),
+):
+    """
+    Carga el paquete de datos por defecto (profesores, actividades, grilla).
+    Requiere cabecera `X-Seed-Token` igual a `SEED_SECRET_TOKEN`.
+    """
+    try:
+        data = apply_seed(db, replace=body.replace)
+    except SeedError as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message) from e
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Conflicto al insertar (¿franja duplicada?).",
+        ) from e
+    return schemas.SeedResult(**data)
 
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"

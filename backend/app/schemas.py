@@ -22,6 +22,7 @@ class ActividadBase(BaseModel):
     nombre: str = Field(..., min_length=1, max_length=200)
     descripcion: str | None = None
     cupo: int = Field(..., ge=1, le=500)
+    es_hot: bool = False
 
 
 class ActividadCreate(ActividadBase):
@@ -32,6 +33,15 @@ class ActividadRead(ActividadBase):
     id: int
 
     model_config = {"from_attributes": True}
+
+
+class ActividadPatch(BaseModel):
+    """Actualización parcial (solo se aplican campos enviados)."""
+
+    nombre: str | None = Field(None, min_length=1, max_length=200)
+    descripcion: str | None = None
+    cupo: int | None = Field(None, ge=1, le=500)
+    es_hot: bool | None = None
 
 
 class FranjaHorariaInput(BaseModel):
@@ -100,3 +110,16 @@ class AppConfigRead(BaseModel):
 
 class AppConfigPatch(BaseModel):
     ocultar_profesor_vista_publica: bool | None = None
+
+
+class SeedRequest(BaseModel):
+    """Carga masiva demo: profesores, actividades y franjas predefinidas."""
+
+    replace: bool = False
+
+
+class SeedResult(BaseModel):
+    profesores: int
+    actividades: int
+    clases: int
+    replace: bool

@@ -58,6 +58,7 @@ export function WeeklyGrid({
   profesores = [],
   actividades = [],
   ocultarProfesorVistaPublica = false,
+  actividadDestacadaId = null,
   onAssignProfesor,
   onAssignActividad,
   onClearProfesor,
@@ -70,6 +71,8 @@ export function WeeklyGrid({
   actividades?: Actividad[]
   /** Solo `variant="public"`: no mostrar nombre de la profesora en los bloques. */
   ocultarProfesorVistaPublica?: boolean
+  /** Solo `variant="public"`: resalta esta actividad y atenúa el resto. */
+  actividadDestacadaId?: number | null
   onAssignProfesor?: (claseId: number, profesorId: number | null) => void
   onAssignActividad?: (claseId: number, actividadId: number | null) => void
   onClearProfesor?: (claseId: number) => void
@@ -96,7 +99,15 @@ export function WeeklyGrid({
 
   function blockClass(cl: ClaseHorario): string {
     const parts = [c.block]
-    if (variant === 'public') return parts.join(' ')
+    if (variant === 'public') {
+      if (cl.actividad?.es_hot === true) parts.push('pub-block--hot')
+      else parts.push('pub-block--cool')
+      if (actividadDestacadaId != null) {
+        if (cl.actividad_id === actividadDestacadaId) parts.push('pub-block--highlight')
+        else parts.push('pub-block--muted')
+      }
+      return parts.join(' ')
+    }
     const hasA = cl.actividad != null
     const hasP = cl.profesor != null
     if (!hasA && !hasP) parts.push('block--empty')

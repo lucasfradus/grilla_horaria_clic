@@ -208,6 +208,48 @@
   padding-bottom: 1.5rem;
 }
 
+.admin-seed-panel {
+  border-color: color-mix(in srgb, var(--border) 80%, var(--accent) 20%);
+  background: linear-gradient(165deg, #fffef9 0%, #f8f6f1 100%);
+}
+
+.admin-seed-panel code {
+  font-size: 0.82em;
+}
+
+.admin-seed-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.admin-seed-token-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.admin-seed-token-label input {
+  max-width: 22rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font: inherit;
+}
+
+.admin-seed-replace {
+  margin: 0;
+  max-width: 40rem;
+}
+
+.admin-seed-msg {
+  margin: 0.5rem 0 0;
+}
+
 .panel-title {
   margin: 0 0 0.65rem;
   font-size: 1.08rem;
@@ -562,34 +604,20 @@
   flex-wrap: wrap;
 }
 
-/* Layout admin: grilla + panel DnD */
+/* Layout admin */
 .admin-workspace {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 
-@media (min-width: 1024px) {
-  .admin-workspace {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 1.25rem;
-  }
+.admin-main-col {
+  min-width: 0;
+}
 
-  .admin-main-col {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .admin-sidebar {
-    width: 300px;
-    flex-shrink: 0;
-  }
-
-  .sidebar-sticky {
-    position: sticky;
-    top: 0.75rem;
-  }
+.admin-abm-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  min-width: 0;
 }
 
 .sidebar-hint {
@@ -657,6 +685,132 @@
   margin-bottom: 0.75rem;
 }
 
+/* Alta de actividades (sidebar admin) */
+.actividad-alta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.actividad-alta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.actividad-alta-field--inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+}
+
+.actividad-alta-field--inline .actividad-alta-label {
+  margin: 0;
+}
+
+.actividad-alta-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.actividad-alta-label-optional {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+
+.actividad-alta-hint-inline {
+  flex: 1 1 100%;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+@media (min-width: 380px) {
+  .actividad-alta-field--inline .actividad-alta-hint-inline {
+    flex: 0 1 auto;
+    margin-left: 0;
+  }
+}
+
+.actividad-alta-form input[type='text'],
+.actividad-alta-form input[type='number'] {
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font: inherit;
+  min-width: 0;
+  width: 100%;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.actividad-alta-field--inline .input-cupo {
+  width: auto;
+  max-width: 5.5rem;
+}
+
+.actividad-hot-block {
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--gutter-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.actividad-hot-block__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.actividad-hot-block__main input {
+  margin-top: 0.22rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.actividad-hot-block__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.actividad-hot-block__title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.actividad-hot-block__hint {
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.actividad-alta-submit {
+  width: 100%;
+  margin-top: 0.1rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-ui);
+}
+
 .compact-form input {
   padding: 0.35rem 0.45rem;
   border-radius: 6px;
@@ -722,6 +876,44 @@
 .dnd-chip-cupo {
   font-size: 0.72rem;
   color: var(--muted);
+}
+
+.dnd-chip-act-title {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  font-weight: 600;
+}
+
+.dnd-chip-hot {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4b5563, #374151);
+  color: #fff;
+}
+
+.dnd-chip-desc {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.admin-act-hot-row {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.admin-act-hot-row input {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: #374151;
 }
 
 .recurrencia-form {

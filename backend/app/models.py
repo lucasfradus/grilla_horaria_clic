@@ -30,6 +30,7 @@ class Actividad(Base):
     nombre = Column(String(200), nullable=False)
     descripcion = Column(String(500), nullable=True)
     cupo = Column(Integer, nullable=False, default=10)
+    es_hot = Column(Boolean, nullable=False, default=False)
 
     clases = relationship("ClaseHorario", back_populates="actividad")
 

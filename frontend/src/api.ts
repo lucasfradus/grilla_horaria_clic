@@ -65,8 +65,23 @@ export const api = {
   },
   actividades: {
     list: () => req<Actividad[]>('/actividades'),
-    create: (body: { nombre: string; descripcion?: string | null; cupo: number }) =>
-      req<Actividad>('/actividades', { method: 'POST', body: JSON.stringify(body) }),
+    create: (body: {
+      nombre: string
+      descripcion?: string | null
+      cupo: number
+      es_hot?: boolean
+    }) => req<Actividad>('/actividades', { method: 'POST', body: JSON.stringify(body) }),
+    /** POST (y PATCH en el server) para evitar 405 detrás de algunos proxies / SPA. */
+    update: (
+      id: number,
+      body: Partial<{
+        nombre: string
+        descripcion: string | null
+        cupo: number
+        es_hot: boolean
+      }>,
+    ) =>
+      req<Actividad>(`/actividades/${id}`, { method: 'POST', body: JSON.stringify(body) }),
     remove: (id: number) =>
       req<void>(`/actividades/${id}`, { method: 'DELETE' }),
   },
@@ -90,4 +105,13 @@ export const api = {
     remove: (id: number) =>
       req<void>(`/clases/${id}`, { method: 'DELETE' }),
   },
+  seedDemo: (token: string, replace: boolean) =>
+    req<{ profesores: number; actividades: number; clases: number; replace: boolean }>(
+      '/admin/seed',
+      {
+        method: 'POST',
+        headers: { 'X-Seed-Token': token },
+        body: JSON.stringify({ replace }),
+      },
+    ),
 }
